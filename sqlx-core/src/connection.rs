@@ -161,6 +161,7 @@ pub struct LogSettings {
     pub statements_level: LevelFilter,
     pub slow_statements_level: LevelFilter,
     pub slow_statements_duration: Duration,
+    pub tracing_span: Option<tracing::Span>,
 }
 
 impl Default for LogSettings {
@@ -169,6 +170,7 @@ impl Default for LogSettings {
             statements_level: LevelFilter::Debug,
             slow_statements_level: LevelFilter::Warn,
             slow_statements_duration: Duration::from_secs(1),
+            tracing_span: None,
         }
     }
 }
@@ -180,6 +182,9 @@ impl LogSettings {
     pub fn log_slow_statements(&mut self, level: LevelFilter, duration: Duration) {
         self.slow_statements_level = level;
         self.slow_statements_duration = duration;
+    }
+    pub fn tracing_span(&mut self, span: tracing::Span) {
+        self.tracing_span = Some(span);
     }
 }
 
@@ -200,6 +205,8 @@ pub trait ConnectOptions: 'static + Send + Sync + FromStr<Err = Error> + Debug +
     /// Log executed statements with a duration above the specified `duration`
     /// at the specified `level`.
     fn log_slow_statements(self, level: LevelFilter, duration: Duration) -> Self;
+
+    fn tracing_span(self, span: tracing::Span) -> Self;
 
     /// Entirely disables statement logging (both slow and regular).
     fn disable_statement_logging(self) -> Self {

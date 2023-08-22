@@ -55,6 +55,11 @@ impl ConnectOptions for SqliteConnectOptions {
         self.log_settings.log_slow_statements(level, duration);
         self
     }
+
+    fn tracing_span(mut self, span: tracing::Span) -> Self {
+        self.log_settings.tracing_span(span);
+        self
+    }
 }
 
 impl SqliteConnectOptions {

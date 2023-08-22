@@ -73,6 +73,7 @@ impl<'q, O: Debug + Hash + Eq, R: Debug, P: Debug> QueryPlanLogger<'q, O, R, P> 
 
                 sqlx_core::private_tracing_dynamic_event!(
                     target: "sqlx::explain",
+                    parent: self.settings.tracing_span.clone().map(|span| span.id()).flatten(),
                     tracing_level,
                     message,
                 );

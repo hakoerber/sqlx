@@ -58,4 +58,9 @@ impl ConnectOptions for AnyConnectOptions {
         self.log_settings.slow_statements_duration = duration;
         self
     }
+
+    fn tracing_span(mut self, span: tracing::Span) -> Self {
+        self.log_settings.tracing_span(span);
+        self
+    }
 }

@@ -25,15 +25,15 @@ macro_rules! private_tracing_dynamic_enabled {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! private_tracing_dynamic_event {
-    (target: $target:expr, $level:expr, $($args:tt)*) => {{
+    (target: $target:expr, parent: $parent:expr, $level:expr, $($args:tt)*) => {{
         use ::tracing::Level;
 
         match $level {
-            Level::ERROR => ::tracing::event!(target: $target, Level::ERROR, $($args)*),
-            Level::WARN => ::tracing::event!(target: $target, Level::WARN, $($args)*),
-            Level::INFO => ::tracing::event!(target: $target, Level::INFO, $($args)*),
-            Level::DEBUG => ::tracing::event!(target: $target, Level::DEBUG, $($args)*),
-            Level::TRACE => ::tracing::event!(target: $target, Level::TRACE, $($args)*),
+            Level::ERROR => ::tracing::event!(target: $target, parent: $parent, Level::ERROR, $($args)*),
+            Level::WARN => ::tracing::event!(target: $target, parent: $parent, Level::WARN, $($args)*),
+            Level::INFO => ::tracing::event!(target: $target, parent: $parent, Level::INFO, $($args)*),
+            Level::DEBUG => ::tracing::event!(target: $target, parent: $parent, Level::DEBUG, $($args)*),
+            Level::TRACE => ::tracing::event!(target: $target, parent: $parent, Level::TRACE, $($args)*),
         }
     }};
 }
@@ -116,6 +116,7 @@ impl<'q> QueryLogger<'q> {
 
                 private_tracing_dynamic_event!(
                     target: "sqlx::query",
+                    parent: self.settings.tracing_span.clone().map(|span| span.id()).flatten(),
                     tracing_level,
                     summary,
                     db.statement = sql,
